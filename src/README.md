@@ -7,7 +7,7 @@ REQUIREMENTS:
 -  packages in requirements.txt
 
 BUILD:
--  pip install -r requirements.txt
+-  pip install -r requirements.txt --user
 
 RUN:
 -  python gen.py
