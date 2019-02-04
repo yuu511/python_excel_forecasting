@@ -22,4 +22,4 @@ PERIOD / DEMAND / PERIODICITY
 
 - Periodicity: Single number (which will denote the seasonality of the data)
 
-(look at data.csv for an example.)
+( look at data.csv for an example. )
