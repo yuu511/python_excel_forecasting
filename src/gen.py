@@ -2,9 +2,12 @@ import xlsxwriter
 import sys
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from scipy import stats
+workbook = xlsxwriter.Workbook('generated_spreadsheet.xlsx')
 
 def static_forecast():
+  static_forecast = workbook.add_worksheet('static_foreast')
   data = None
   period = []
   demand = []
@@ -17,8 +20,6 @@ def static_forecast():
   avg_sea = []
   res_demand = []
   p = None
-  workbook = xlsxwriter.Workbook('tahoe_salt.xlsx')
-  static_forecast = workbook.add_worksheet('static_foreast')
   
   # our data 
   data = pd.read_csv('data.csv')
@@ -114,7 +115,7 @@ def static_forecast():
     static_forecast.write (row,col,asea)
     row += 1
   
-  # reseasonalize_demand
+  # reseasonalize demand
   row = 1
   col = 7
   for x in range (num_period):
@@ -122,7 +123,12 @@ def static_forecast():
     res_demand.append (resea)
     static_forecast.write (row,col,resea)
     row += 1
-  workbook.close()
+  
+  # plot regressed, deseasonalized demand and reseasonalized demand
+  # plt.plot (period,reg_demand,period,res_demand)
+  # plt.ylabel('demand')
+  # plt.xlabel('period')
+  # plt.show()
 
   print ()
   print ("DESEASONALIZED DEMAND: [x] , [DEMAND]")
@@ -142,5 +148,55 @@ def static_forecast():
   print ("Reseasonalized Demand:")
   print (res_demand)
 
+def moving_average():
+  moving_average = workbook.add_worksheet('moving_average')
+  # our data 
+  data = pd.read_csv('data.csv')
+  period = data['period'].values
+  demand = data['demand'].values 
+  periodicity = data['periodicity'].values
+  num_demand = len(demand)
+  num_period = len(period)
+  p = int(periodicity[0])
+
+  # column names
+  c_names = ['Period','Demand','Level','Forecast','Error','Absolute Error','Squared Error (MSE)','MAD','% Error', 'MAPE','TS']
+  row = 0 
+  col = 0
+  for name in (c_names):
+    moving_average.write (row,col, name)
+    col += 1
+
+  # fill out period
+  row = 1 
+  col = 0
+  for x in range (num_demand):
+    moving_average.write (row,col, x+1)
+    row += 1
+
+  # Demand Data
+  row = 1 
+  col = 1
+  for x in range (num_demand):
+    moving_average.write (row,col,demand[x]) 
+    row += 1
+
+  # Level
+
+def simple_exponential_smoothing():
+  s_e = workbook.add_worksheet('simple_exponential_smoothing')
+
+  # column names
+  c_names = ['Period','Demand','Level','Forecast','Error','Absolute Error','Squared Error (MSE)','MAD','% Error', 'MAPE','TS']
+  row = 0 
+  col = 0
+  for name in (c_names):
+    s_e.write (row,col, name)
+    col += 1
+
+
 if __name__ == "__main__":
   static_forecast()
+  moving_average()
+  simple_exponential_smoothing()
+  workbook.close()
