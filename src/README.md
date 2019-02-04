@@ -1,4 +1,5 @@
-Generates a Static, Moving Average, and Simple Exponential Smoothing excel spreadsheet in the same directory the program is run.
+Generates a static, moving average, and simple exponential smoothing excel spreadsheet in the same directory the program is run.
+Run gen.py in the src folder.
 
 REQUIREMENTS:
 -  Python3
@@ -15,10 +16,10 @@ DATA:
 Data is formatted in a CSV file: data.csv.
 PERIOD / DEMAND / PERIODICITY
 
-Where period is any ascending numerical series (1,2,3,4,5...)
+- Where period is any ascending numerical series (1,2,3,4,5...)
 
-Demand is any amount of numbers
+- Demand is any amount of numbers
 
-Periodicity: Single number (which will denote the seasonality of the data)
+- Periodicity: Single number (which will denote the seasonality of the data)
 
-Look at data.csv for an example.
+(look at data.csv for an example.)
