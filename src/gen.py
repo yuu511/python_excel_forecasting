@@ -125,10 +125,10 @@ def static_forecast():
     row += 1
   
   # plot regressed, deseasonalized demand and reseasonalized demand
-  # plt.plot (period,reg_demand,period,res_demand)
-  # plt.ylabel('demand')
-  # plt.xlabel('period')
-  # plt.show()
+  plt.plot (period,reg_demand,period,res_demand)
+  plt.ylabel('demand')
+  plt.xlabel('period')
+  plt.show()
 
   print ()
   print ("DESEASONALIZED DEMAND: [x] , [DEMAND]")

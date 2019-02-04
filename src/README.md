@@ -1,3 +1,5 @@
+Generates a Static, Moving Average, and Simple Exponential Smoothing excel spreadsheet in the same directory the program is run.
+
 REQUIREMENTS:
 -  Python3
 -  pip 
