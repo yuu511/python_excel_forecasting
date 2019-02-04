@@ -12,8 +12,10 @@ def main():
   period = data['period'].values
   demand = data['demand'].values 
   periodicity = data['periodicity'].values
-  num_periods = len(period)
+  num_demand = len(period)
   p = int(periodicity[0])
+  regressed_x = []
+  regressed_demand = []
   
   # column names
   c_names = ['Year','Period','Demand','De-Seasonalized Demand','Regressed,Deseasonalized Demand', 'Seasonal Factors', 'Average Seasonal Factors', 'Reintroduce Seasonality']
@@ -26,7 +28,7 @@ def main():
   # fill out year and period columns
   row = 1 
   col = 0
-  for x in range (num_periods):
+  for x in range (num_demand):
     mod = x%p
     quarter = p / 4
     if (mod == 0):
@@ -37,14 +39,14 @@ def main():
   # Demand Data
   row = 1 
   col = 2
-  for x in range (num_periods):
+  for x in range (num_demand):
     worksheet.write (row,col,demand[x]) 
     row += 1
   
   # Demand data, deseasonalized
   if (p % 2 == 0): 
     min_val= int((p/2) + 1)
-    max_val= int(num_periods - (p/2) + 1)
+    max_val= int(num_demand - (p/2) + 1)
     row = min_val
     col = 3
     for x in range (min_val,max_val):
@@ -52,25 +54,33 @@ def main():
       lower = int(x-(p/2))-1
       upper = int(x+(p/2))-1
       des=(demand[lower] + demand[upper]+(2 * np.sum(demand[lower+1:upper])))/(2*p)
+      regressed_x.append(x)
+      regressed_demand.append(des)
       worksheet.write (row,col,des) 
       row += 1
   else:
     min_val = int (((p-1)/2)+1)
-    max_val = int (num_periods - ((p-1)/2)+1) 
+    max_val = int (num_demand - ((p-1)/2)+1) 
     row = min_val
     col = 3
     for x in range (min_val,max_val):
       lower = int (x-((p-1)/2)) 
       upper = int (x+((p-1)/2)) 
       des = (np.sum(demand[lower-1:upper]))/p
+      regressed_x.append(x)
+      regressed_demand.append(des)
       worksheet.write (row,col,des)
       row += 1
   
   # Demand data, deseasonalized and regressed
   # X = np.stack ((x,demand),axis=0)
+  print (regressed_x)
+  print (regressed_demand)
+  regressed_x = np.array(regressed_x)
+  regressed_demand = np.array(regressed_demand)
     
   
   workbook.close()
 
 if __name__ == "__main__":
-  main() 
+  main()
