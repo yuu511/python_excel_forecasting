@@ -3,7 +3,7 @@ Run gen.py in the src folder.
 
 REQUIREMENTS:
 -  Python3
--  pip 
+-  pip for Python3
 -  packages in requirements.txt
 
 BUILD:
