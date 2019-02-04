@@ -4,6 +4,7 @@ Run gen.py in the src folder.
 REQUIREMENTS:
 -  Python3
 -  pip for Python3
+-  tk (or jupyter notebook)
 -  packages in requirements.txt
 
 BUILD:

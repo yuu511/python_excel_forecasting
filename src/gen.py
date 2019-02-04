@@ -8,18 +8,16 @@ workbook = xlsxwriter.Workbook('generated_spreadsheet.xlsx')
 
 def static_forecast():
   static_forecast = workbook.add_worksheet('static_foreast')
-  data = None
+
+  # initialize lists 
   period = []
   demand = []
   des_x = []
   des_demand = []
-  slope = None
-  intercept = None
   reg_demand = []
   sea_factors = []
   avg_sea = []
   res_demand = []
-  p = None
   
   # our data 
   data = pd.read_csv('data.csv')
