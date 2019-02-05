@@ -4,10 +4,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
-workbook = xlsxwriter.Workbook('generated_spreadsheet.xlsx')
 
-def static_forecast():
-  static_forecast = workbook.add_worksheet('static_foreast')
+debug = False
+
+def static_forecast(xlsx,dataset):
+  static_forecast = xlsx.add_worksheet('static_foreast')
   data = None
   period = []
   demand = []
@@ -22,7 +23,7 @@ def static_forecast():
   p = None
   
   # our data 
-  data = pd.read_csv('data.csv')
+  data = pd.read_csv(dataset)
   period = data['period'].values
   demand = data['demand'].values 
   periodicity = data['periodicity'].values
@@ -130,28 +131,36 @@ def static_forecast():
   plt.xlabel('period')
   plt.show()
 
-  print ()
-  print ("DESEASONALIZED DEMAND: [x] , [DEMAND]")
-  print (des_x)
-  print (des_demand)
-  print ()
-  print ()
-  print ("Linear Regression Equation:")
-  print ("Y=%fX+%f" % (slope,intercept))
-  print ()
-  print ("Linear Regression Values:")
-  print (reg_demand)
-  print ("Seasonal Factors:")
-  print (sea_factors)
-  print ("Average Seasonal:")
-  print (avg_sea)
-  print ("Reseasonalized Demand:")
-  print (res_demand)
+  # debug print statements
+  if (debug):
+    print ()
+    print ("DESEASONALIZED DEMAND: [x] , [DEMAND]")
+    print (des_x)
+    print (des_demand)
+    print ()
+    print ()
+    print ("Linear Regression Equation:")
+    print ("Y=%fX+%f" % (slope,intercept))
+    print ()
+    print ("Linear Regression Values:")
+    print (reg_demand)
+    print ("Seasonal Factors:")
+    print (sea_factors)
+    print ("Average Seasonal:")
+    print (avg_sea)
+    print ("Reseasonalized Demand:")
+    print (res_demand)
 
-def moving_average():
-  moving_average = workbook.add_worksheet('moving_average')
+def moving_average(xlsx,dataset):
+  moving_average = xlsx.add_worksheet('moving_average')
+
+  # init lists
+  lvl = []
+  fcast = []
+  err = []
+
   # our data 
-  data = pd.read_csv('data.csv')
+  data = pd.read_csv(dataset)
   period = data['period'].values
   demand = data['demand'].values 
   periodicity = data['periodicity'].values
@@ -182,9 +191,48 @@ def moving_average():
     row += 1
 
   # Level
+  row = p 
+  col = 2
+  for x in range ((num_demand-p)+1):
+    level = np.average(demand[x:x+p])
+    lvl.append(level)
+    moving_average.write (row,col,level) 
+    row+=1
+ 
+  # Forecast
+  row = p+1
+  col = 3
+  for x in range (len(lvl)-1):
+    forecast = lvl[x]
+    fcast.append(forecast)
+    moving_average.write (row,col,forecast) 
+    row+=1
+  
 
-def simple_exponential_smoothing():
-  s_e = workbook.add_worksheet('simple_exponential_smoothing')
+  # Error
+  row = p+1
+  col = 3
+  for x in range (len(fcast)):
+    error = fcast[x] - demand [x+p]
+    err.append(error)
+    moving_average.write (row,col,error) 
+    row+=1
+  
+  # Error(ABS)
+  row = p+1
+  col = 4
+  for x in range (len(err)):
+    moving_average.write (row,col,np.absolute(err[x])) 
+    row+=1
+
+  # Squared root error (MSE)
+  row = p+1
+  col = 5
+  for x in range (len(err)):
+    
+
+def simple_exponential_smoothing(xlsx,dataset):
+  s_e = xlsx.add_worksheet('simple_exponential_smoothing')
 
   # column names
   c_names = ['Period','Demand','Level','Forecast','Error','Absolute Error','Squared Error (MSE)','MAD','% Error', 'MAPE','TS']
@@ -196,7 +244,9 @@ def simple_exponential_smoothing():
 
 
 if __name__ == "__main__":
-  static_forecast()
-  moving_average()
-  simple_exponential_smoothing()
-  workbook.close()
+  xlsx = xlsxwriter.Workbook('generated_spreadsheet.xlsx')
+  dataset = 'data.csv'
+  static_forecast(xlsx,dataset)
+  moving_average(xlsx,dataset)
+  simple_exponential_smoothing(xlsx,dataset)
+  xlsx.close()
