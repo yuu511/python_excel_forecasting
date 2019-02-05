@@ -155,6 +155,7 @@ def moving_average(xlsx,dataset):
   lvl = []
   fcast = []
   err = []
+  mse = []
 
   # our data 
   data = pd.read_csv(dataset)
@@ -225,7 +226,11 @@ def moving_average(xlsx,dataset):
   # Squared root error (MSE)
   row = p+1
   col = 5
-  for x in range (len(err)):
+  for i in range (len(err)):
+    mean_square = np.sum(np.power(err[0:i+1],2))/(i+1)
+    mse.append(mean_square)    
+    moving_average.write (row,col,mean_square) 
+    row+=1
     
 
 def simple_exponential_smoothing(xlsx,dataset):
