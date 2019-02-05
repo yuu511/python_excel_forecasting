@@ -155,7 +155,10 @@ def moving_average(xlsx,dataset):
   lvl = []
   fcast = []
   err = []
+  aerr = []
   mse = []
+  mad = []
+  perr = []
 
   # our data 
   data = pd.read_csv(dataset)
@@ -209,28 +212,59 @@ def moving_average(xlsx,dataset):
 
   # Error
   row = p+1
-  col = 3
+  col = 4
   for x in range (len(fcast)):
     error = fcast[x] - demand [x+p]
     err.append(error)
     moving_average.write (row,col,error) 
     row+=1
   
-  # Error(ABS)
+  # Absolute error
   row = p+1
-  col = 4
+  col = 5
   for x in range (len(err)):
-    moving_average.write (row,col,np.absolute(err[x])) 
+    abserr = np.absolute(err[x]) 
+    aerr.append(abserr)
+    moving_average.write (row,col,abserr) 
     row+=1
 
   # Squared root error (MSE)
   row = p+1
-  col = 5
-  for i in range (len(err)):
-    mean_square = np.sum(np.power(err[0:i+1],2))/(i+1)
+  col = 6
+  for x in range (len(err)):
+    mean_square = np.sum(np.power(err[0:x+1],2))/(x+1)
     mse.append(mean_square)    
     moving_average.write (row,col,mean_square) 
     row+=1
+
+  # Mean absolute Deviation (MAD)
+  row = p+1
+  col = 7
+  for x in range (len(aerr)):
+    meanad = np.sum(aerr[0:x+1])/(x+1)
+    mad.append(meanad)    
+    moving_average.write (row,col,meanad) 
+    row+=1
+
+  # % error
+  row = p+1
+  col = 8
+  for x in range (len(err)): 
+    percent = 100 * (aerr[x]/demand[x+p])
+    perr.append(percent)
+    moving_average.write (row,col,percent) 
+    row += 1
+
+  # MAPE 
+  row = p+1
+  col = 9
+  for x in range (len(err)): 
+    percent = 100 * (aerr[x]/demand[x+p])
+    perr.append(percent)
+    moving_average.write (row,col,percent) 
+    row += 1
+    
+    
     
 
 def simple_exponential_smoothing(xlsx,dataset):
