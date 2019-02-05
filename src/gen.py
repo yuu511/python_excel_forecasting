@@ -14,13 +14,10 @@ def static_forecast(xlsx,dataset):
   demand = []
   des_x = []
   des_demand = []
-  slope = None
-  intercept = None
   reg_demand = []
   sea_factors = []
   avg_sea = []
   res_demand = []
-  p = None
   
   # our data 
   data = pd.read_csv(dataset)
