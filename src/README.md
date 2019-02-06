@@ -14,16 +14,16 @@ RUN:
 Three different ways of running the program.
 
 No arguments:
-- %  python gen.py : Runs the program with (data.csv) as the dataset and saves the excel spradsheet as (generated_spreadsheet.xlsx)
+- %  python3 gen.py : Runs the program with (data.csv) as the dataset and saves the excel spradsheet as (generated_spreadsheet.xlsx)
 
 1 Argument:
-- %  python gen.py [DATASET] : Runs the program with [DATASET] as the dataset and saves the spreadsheet as (generated_spreadsheet.xlsx) 
-- example: %python gen.py data2.csv
+- %  python3 gen.py [DATASET] : Runs the program with [DATASET] as the dataset and saves the spreadsheet as (generated_spreadsheet.xlsx) 
+- example: %python3 gen.py data2.csv
 
 2 Arguments:
 
-- % python gen.py [DATASET] [FILE] Runs the program with [DATASET] as the dataset and saves the spreadsheet as [FILE]
-- example : %python gen.py data2.csv thing.xlsx
+- % python3 gen.py [DATASET] [FILE] Runs the program with [DATASET] as the dataset and saves the spreadsheet as [FILE]
+- example : %python3 gen.py data2.csv thing.xlsx
 
 DATA:
 Data is formatted in a CSV file: data.csv.
