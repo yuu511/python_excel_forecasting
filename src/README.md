@@ -4,8 +4,10 @@ Run gen.py in the src folder.
 REQUIREMENTS:
 -  Python3
 -  pip for Python3
--  tk (or jupyter notebook)
 -  packages in requirements.txt
+
+OPTIONAL:
+-  tk (or jupyter notebook) : Displays matplotlib graphs 
 
 BUILD:
 -  python3 -m pip install -r requirements.txt --user
