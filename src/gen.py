@@ -1,16 +1,17 @@
 import xlsxwriter
-import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
+import sys
+import os
 
 debug = False
 
 # generate error statistics (Error,ABS error, MSE , MAD, MAPE and TS)
 # based on forecast,error and demand, write on specified excel worksheet (w) beginning on (row,col)
 # NOTE: demand must equal the size of forecast for the calculation to be correct (Do array slicing BEFORE calling the function)
-# and will directly compare the two arrays by idnex
+# (indexes of demand and fcast will be compared directly)
 def calculate_error(fcast,demand,w,row,col):
   o_row = row
   o_col = col
@@ -97,6 +98,7 @@ def calculate_error(fcast,demand,w,row,col):
 
   return err,aerr,mse,mad,perr,mape,ts
    
+# calcualte static forecast
 def static_forecast(xlsx,dataset):
   static_forecast = xlsx.add_worksheet('static_foreast')
   data = None
@@ -243,6 +245,7 @@ def static_forecast(xlsx,dataset):
     print ("avg_seasonal_factors     %r " %  avg_sea    )
     print ("reseasonalized_demand  %r " %  fcast )
 
+# calculate moving average forecast
 def moving_average(xlsx,dataset):
   moving_average = xlsx.add_worksheet('moving_average')
 
@@ -328,7 +331,8 @@ def moving_average(xlsx,dataset):
     print("mape \n %r" % mape )
     print("ts   \n %r" % ts   )
 
-def simple_exponential_smoothing(xlsx,dataset):
+# calculate forecast with simple exponential smoothing
+def simple_exponential_smoothing(xlsx,dataset,alpha):
   s_e = xlsx.add_worksheet('simple_exponential_smoothing')
 
   # our data 
@@ -342,7 +346,6 @@ def simple_exponential_smoothing(xlsx,dataset):
 
   # init lists
   lzero = None
-  alpha = 0.1
   lvl   = []
   fcast = []
   err   = []
@@ -433,5 +436,6 @@ if __name__ == "__main__":
     xlsx = xlsxwriter.Workbook(sys.argv[2])
   static_forecast(xlsx,dataset)
   moving_average(xlsx,dataset)
-  simple_exponential_smoothing(xlsx,dataset)
+  alpha = 0.1
+  simple_exponential_smoothing(xlsx,dataset,alpha)
   xlsx.close()
