@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import sys
 import os
+import shutil
 
 debug = False
 
@@ -232,7 +233,7 @@ def static_forecast(xlsx,dataset):
   plt.plot (period,reg_demand,period,fcast)
   plt.ylabel('demand')
   plt.xlabel('period')
-  plt.savefig('static_forecasting.png')
+  plt.savefig('./graphs/static_forecasting.png')
   plt.close()
 
   # debug print statements
@@ -314,7 +315,7 @@ def moving_average(xlsx,dataset):
 
   # plot the forecast
   plt.plot (period, demand, period[len(period)-len(fcast):len(period)],fcast)
-  plt.savefig('moving_average.png')
+  plt.savefig('./graphs/moving_average.png')
   plt.ylabel('demand')
   plt.xlabel('period')
   plt.close()
@@ -424,18 +425,53 @@ def simple_exponential_smoothing(xlsx,dataset,alpha):
   plt.plot (period, demand, period,fcast)
   plt.ylabel('demand')
   plt.xlabel('period')
-  plt.savefig('simple_smoothing.png')
+  plt.savefig('./graphs/simple_smoothing.png')
   plt.close()
 
 if __name__ == "__main__":
-  dataset = 'data.csv' 
-  xlsx = xlsxwriter.Workbook('generated_spreadsheet.xlsx')
+  o_wd = os.getcwd()
+  src_path = os.path.abspath(__file__)
+  src_dir =  os.path.dirname(src_path)
+  dirname= 'graphs+excel_directory'
+  dataset = src_dir +'/data.csv'
   if (len(sys.argv) >= 2):
-    dataset=sys.argv[1]
+    dataset = sys.argv[1]
   if (len(sys.argv) >= 3):
-    xlsx = xlsxwriter.Workbook(sys.argv[2])
+     dirname = sys.argv[2]
+  if (os.path.exists(dirname)):
+    while (1):
+      print ("The directory you are trying to save your files to :\n[ %s ]\nalready exists. delete it? y/n" % dirname)
+      try:
+        line = sys.stdin.readline()
+      except KeyboardInterrupt:
+         break
+      if not line:
+        break
+      if (line.rstrip() is 'y'):
+        print ("Deleting...")
+        try:
+          shutil.rmtree(dirname)
+          os.mkdir(dirname)
+        except (OSError,IOError) as e:
+          print ("Error in making directory!") 
+          sys.exit(1)
+        print ("Deletion sucess: folder %s overwritten!" % dirname)
+        break;
+      elif (line.rstrip() is 'n'):
+        print ("Exiting...")
+        sys.exit()
+  else:
+    try:
+      os.mkdir(dirname)
+    except OSError as e:
+      print ("Error in making directory!") 
+      sys.exit(1)
+  os.chdir(dirname)
+  os.mkdir('graphs')
+  xlsx = xlsxwriter.Workbook('generated_spreadsheet')
   static_forecast(xlsx,dataset)
   moving_average(xlsx,dataset)
   alpha = 0.1
   simple_exponential_smoothing(xlsx,dataset,alpha)
   xlsx.close()
+  os.chdir(o_wd)
