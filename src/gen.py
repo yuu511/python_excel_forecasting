@@ -8,10 +8,11 @@ from scipy import stats
 debug = False
 
 # generate error statistics (Error,ABS error, MSE , MAD, MAPE and TS)
-# based on forecast,error and demand, write on specified worksheet (w) beginning on (row,col)
+# based on forecast,error and demand, write on specified excel worksheet (w) beginning on (row,col)
 # NOTE: demand must equal the size of forecast for the calculation to be correct (Do array slicing BEFORE calling the function)
 def calculate_error(fcast,demand,w,row,col):
   o_row = row
+  o_col = col
 
   err = []
   aerr = []
@@ -21,7 +22,16 @@ def calculate_error(fcast,demand,w,row,col):
   mape = []
   ts = []
 
+  # write error name column names
+  error_names = ['Error','Absolute Error','Squared Error (MSE)','MAD','% Error', 'MAPE','TS']
+  row = 0
+  for name in (error_names):
+    w.write (row,col, name)
+    col += 1
+
   # Error
+  row = o_row
+  col = o_col
   for x in range (len(fcast)):
     error = fcast[x] - demand [x]
     err.append(error)
@@ -89,6 +99,8 @@ def calculate_error(fcast,demand,w,row,col):
 def static_forecast(xlsx,dataset):
   static_forecast = xlsx.add_worksheet('static_foreast')
   data = None
+
+  # init lists
   period      = []
   demand      = []
   des_x       = []
@@ -96,7 +108,16 @@ def static_forecast(xlsx,dataset):
   reg_demand  = []
   sea_factors = []
   avg_sea     = []
-  res_demand  = []
+  fcast  = []
+
+  # error statistics
+  err = []
+  aerr = []
+  mse = []
+  mad = []
+  perr = []
+  mape = []
+  ts = []
   
   # our data 
   data = pd.read_csv(dataset)
@@ -197,12 +218,15 @@ def static_forecast(xlsx,dataset):
   col = 7
   for x in range (num_period):
     resea =  avg_sea[x%p] * reg_demand[x]
-    res_demand.append (resea)
+    fcast.append (resea)
     static_forecast.write (row,col,resea)
     row += 1
+
+  # write error column names and calculate error statistics 
+  err,aerr,mse,mad,perr,mape,ts = calculate_error(fcast,demand,static_forecast,1,8)
   
   # plot regressed, deseasonalized demand and reseasonalized demand
-  plt.plot (period,reg_demand,period,res_demand)
+  plt.plot (period,reg_demand,period,fcast)
   plt.ylabel('demand')
   plt.xlabel('period')
   plt.savefig('static_forecasting.png')
@@ -216,7 +240,7 @@ def static_forecast(xlsx,dataset):
     print ("deseasonalized_demand  %r " %  des_demand )
     print ("regressed_demand  %r " %  reg_demand )
     print ("avg_seasonal_factors     %r " %  avg_sea    )
-    print ("reseasonalized_demand  %r " %  res_demand )
+    print ("reseasonalized_demand  %r " %  fcast )
 
 def moving_average(xlsx,dataset):
   moving_average = xlsx.add_worksheet('moving_average')
@@ -242,7 +266,7 @@ def moving_average(xlsx,dataset):
   p = int(periodicity[0])
 
   # column names
-  c_names = ['Period','Demand','Level','Forecast','Error','Absolute Error','Squared Error (MSE)','MAD','% Error', 'MAPE','TS']
+  c_names = ['Period','Demand','Level','Forecast']
   row = 0 
   col = 0
   for name in (c_names):
@@ -280,7 +304,8 @@ def moving_average(xlsx,dataset):
     fcast.append(forecast)
     moving_average.write (row,col,forecast) 
     row+=1
-  
+
+  # write error column names and calculate error statistics 
   err,aerr,mse,mad,perr,mape,ts = calculate_error(fcast,demand[p:len(demand)],moving_average,p+1,4)
 
   # plot the forecast
@@ -328,7 +353,7 @@ def simple_exponential_smoothing(xlsx,dataset):
   ts    = []
 
   # column names
-  c_names = ['Period','Demand','Level','Forecast','Error','Absolute Error','Squared Error (MSE)','MAD','% Error', 'MAPE','TS']
+  c_names = ['Period','Demand','Level','Forecast']
   row = 0 
   col = 0
   for name in (c_names):
@@ -376,7 +401,9 @@ def simple_exponential_smoothing(xlsx,dataset):
     s_e.write (row,col,forecast) 
     row+=1
  
+  # write error column names and calculate error statistics 
   err,aerr,mse,mad,perr,mape,ts = calculate_error(fcast,demand,s_e,2,4)
+
   # debug
   if (debug):
     print("lvl  \n %r" % lvl  )
