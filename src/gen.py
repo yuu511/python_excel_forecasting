@@ -10,14 +10,14 @@ debug = False
 def static_forecast(xlsx,dataset):
   static_forecast = xlsx.add_worksheet('static_foreast')
   data = None
-  period = []
-  demand = []
-  des_x = []
-  des_demand = []
-  reg_demand = []
+  period      = []
+  demand      = []
+  des_x       = []
+  des_demand  = []
+  reg_demand  = []
   sea_factors = []
-  avg_sea = []
-  res_demand = []
+  avg_sea     = []
+  res_demand  = []
   
   # our data 
   data = pd.read_csv(dataset)
@@ -126,7 +126,8 @@ def static_forecast(xlsx,dataset):
   plt.plot (period,reg_demand,period,res_demand)
   plt.ylabel('demand')
   plt.xlabel('period')
-  plt.show()
+  plt.savefig('static_forecasting.png')
+  plt.close()
 
   # debug print statements
   if (debug):
@@ -241,7 +242,7 @@ def moving_average(xlsx,dataset):
   # % error
   row = p+1
   col = 8
-  for x in range (len(err)): 
+  for x in range (len(aerr)): 
     percent = 100 * (aerr[x]/demand[x+p])
     perr.append(percent)
     moving_average.write (row,col,percent) 
@@ -266,8 +267,11 @@ def moving_average(xlsx,dataset):
     row+=1
    
   # plot the forecast
-  plt.plot (period[len(period)-len(fcast):len(period)],fcast)
-  plt.show()
+  plt.plot (period, demand, period[len(period)-len(fcast):len(period)],fcast)
+  plt.savefig('moving_average.png')
+  plt.ylabel('demand')
+  plt.xlabel('period')
+  plt.close()
 
   # debug
   if (debug):
@@ -296,15 +300,15 @@ def simple_exponential_smoothing(xlsx,dataset):
   # init lists
   lzero = None
   alpha = 0.1
-  lvl = []
+  lvl   = []
   fcast = []
-  err = []
-  aerr = []
-  mse = []
-  mad = []
-  perr = []
-  mape = []
-  ts = []
+  err   = []
+  aerr  = []
+  mse   = []
+  mad   = []
+  perr  = []
+  mape  = []
+  ts    = []
 
   # column names
   c_names = ['Period','Demand','Level','Forecast','Error','Absolute Error','Squared Error (MSE)','MAD','% Error', 'MAPE','TS']
@@ -395,7 +399,7 @@ def simple_exponential_smoothing(xlsx,dataset):
   # % error
   row = 2
   col = 8
-  for x in range (len(err)): 
+  for x in range (len(aerr)): 
     percent = 100 * (aerr[x]/demand[x])
     perr.append(percent)
     s_e.write (row,col,percent) 
@@ -419,7 +423,24 @@ def simple_exponential_smoothing(xlsx,dataset):
     s_e.write (row,col,tracking) 
     row+=1
   
+  # debug
+  if (debug):
+    print("lvl  \n %r" % lvl  )
+    print("fcast\n %r" % fcast)
+    print("err  \n %r" % err  )
+    print("aerr \n %r" % aerr )
+    print("mse  \n %r" % mse  )
+    print("mad  \n %r" % mad  )
+    print("perr \n %r" % perr )
+    print("mape \n %r" % mape )
+    print("ts   \n %r" % ts   )
 
+  # plot regressed, deseasonalized demand and reseasonalized demand
+  plt.plot (period, demand, period,fcast)
+  plt.ylabel('demand')
+  plt.xlabel('period')
+  plt.savefig('simple_smoothing.png')
+  plt.close()
 
 if __name__ == "__main__":
   dataset = 'data.csv' 
