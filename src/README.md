@@ -18,12 +18,12 @@ No arguments:
 
 1 Argument:
 - %  python gen.py [DATASET] : Runs the program with [DATASET] as the dataset and saves the spreadsheet as (generated_spreadsheet.xlsx) 
-- example: % gen.py data2.csv
+- example: %python gen.py data2.csv
 
 2 Arguments:
 
 - % python gen.py [DATASET] [FILE] Runs the program with [DATASET] as the dataset and saves the spreadsheet as [FILE]
-- example : %gen.py data2.csv thing.xlsx
+- example : %python gen.py data2.csv thing.xlsx
 
 DATA:
 Data is formatted in a CSV file: data.csv.
