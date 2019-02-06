@@ -130,23 +130,13 @@ def static_forecast(xlsx,dataset):
 
   # debug print statements
   if (debug):
-    print ()
-    print ("DESEASONALIZED DEMAND: [x] , [DEMAND]")
-    print (des_x)
-    print (des_demand)
-    print ()
-    print ()
-    print ("Linear Regression Equation:")
-    print ("Y=%fX+%f" % (slope,intercept))
-    print ()
-    print ("Linear Regression Values:")
-    print (reg_demand)
-    print ("Seasonal Factors:")
-    print (sea_factors)
-    print ("Average Seasonal:")
-    print (avg_sea)
-    print ("Reseasonalized Demand:")
-    print (res_demand)
+    print ("period      %r " %  period     )
+    print ("demand      %r " %  demand     )
+    print ("seasonal_factors %r " %  sea_factors)
+    print ("deseasonalized_demand  %r " %  des_demand )
+    print ("regressed_demand  %r " %  reg_demand )
+    print ("avg_seasonal_factors     %r " %  avg_sea    )
+    print ("reseasonalized_demand  %r " %  res_demand )
 
 def moving_average(xlsx,dataset):
   moving_average = xlsx.add_worksheet('moving_average')
@@ -197,7 +187,6 @@ def moving_average(xlsx,dataset):
   row = p 
   col = 2
   for x in range ((num_demand-p)+1):
-    print (demand[x:x+p])
     level = np.average(demand[x:x+p])
     lvl.append(level)
     moving_average.write (row,col,level) 
@@ -277,10 +266,20 @@ def moving_average(xlsx,dataset):
     row+=1
    
   # plot the forecast
-  print (period[len(period)-len(fcast):len(period)])
   plt.plot (period[len(period)-len(fcast):len(period)],fcast)
-  print (fcast)
   plt.show()
+
+  # debug
+  if (debug):
+    print("lvl  \n %r" % lvl  )
+    print("fcast\n %r" % fcast)
+    print("err  \n %r" % err  )
+    print("aerr \n %r" % aerr )
+    print("mse  \n %r" % mse  )
+    print("mad  \n %r" % mad  )
+    print("perr \n %r" % perr )
+    print("mape \n %r" % mape )
+    print("ts   \n %r" % ts   )
 
 def simple_exponential_smoothing(xlsx,dataset):
   s_e = xlsx.add_worksheet('simple_exponential_smoothing')
@@ -292,6 +291,8 @@ def simple_exponential_smoothing(xlsx,dataset):
   for name in (c_names):
     s_e.write (row,col, name)
     col += 1
+ 
+  
 
 
 if __name__ == "__main__":

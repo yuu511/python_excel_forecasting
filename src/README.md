@@ -17,7 +17,7 @@ No arguments:
 - %  python gen.py : Runs the program with (data.csv) as the dataset and saves the excel spradsheet as (generated_spreadsheet.xlsx)
 
 1 Argument:
-- %  python gen.py [DATASET] : Runs the program with [DATASET] as the dataset and saves the spreadsheet as (generated_spreadsheet.xlsx
+- %  python gen.py [DATASET] : Runs the program with [DATASET] as the dataset and saves the spreadsheet as (generated_spreadsheet.xlsx)
 
 2 Arguments:
 
