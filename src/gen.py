@@ -159,6 +159,8 @@ def moving_average(xlsx,dataset):
   mse = []
   mad = []
   perr = []
+  mape = []
+  ts = []
 
   # our data 
   data = pd.read_csv(dataset)
@@ -259,13 +261,20 @@ def moving_average(xlsx,dataset):
   row = p+1
   col = 9
   for x in range (len(err)): 
-    percent = 100 * (aerr[x]/demand[x+p])
-    perr.append(percent)
-    moving_average.write (row,col,percent) 
-    row += 1
-    
-    
-    
+    mpe = np.sum(perr[0:x+1])/(x+1)
+    mape.append(mpe)    
+    moving_average.write (row,col,mpe) 
+    row+=1
+     
+  # tracking signal
+  row = p+1
+  col = 10
+  for x in range (len(err)): 
+    tracking = np.sum(err[0:x+1])/mad[x]
+    ts.append(tracking)    
+    moving_average.write (row,col,tracking) 
+    row+=1
+   
 
 def simple_exponential_smoothing(xlsx,dataset):
   s_e = xlsx.add_worksheet('simple_exponential_smoothing')
