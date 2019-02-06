@@ -8,14 +8,20 @@ REQUIREMENTS:
 -  packages in requirements.txt
 
 BUILD:
-<<<<<<< HEAD
--  python3 -m pip install --user -r requirements.txt
-=======
--  pip install -r requirements.txt --user
->>>>>>> d38128ad0615aedb6780d2451b02e354448a7d36
+-  python3 -m pip install -r requirements.txt --user
 
 RUN:
--  python gen.py
+Three different ways of running the program.
+
+No arguments:
+%  python gen.py : Runs the program with (data.csv) as the dataset and saves the excel spradsheet as (generated_spreadsheet.xlsx)
+
+1 Argument:
+%  python gen.py [DATASET] : Runs the program with [DATASET] as the dataset and saves the spreadsheet as (generated_spreadsheet.xlsx
+
+2 Arguments:
+
+% python gen.py [DATASET] [FILE] Runs the program with [DATASET] as the dataset and saves the spreadsheet as [FILE]
 
 DATA:
 Data is formatted in a CSV file: data.csv.

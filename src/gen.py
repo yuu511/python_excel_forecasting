@@ -63,7 +63,7 @@ def static_forecast(xlsx,dataset):
     for x in range (min_val,max_val):
       # extra -1 for array indices
       lower = int(x-(p/2))-1
-      upper = int(x+(p/2))-1
+      upper = (lower + p)
       des=(demand[lower] + demand[upper]+(2 * np.sum(demand[lower+1:upper])))/(2*p)
       des_x.append(x)
       des_demand.append(des)
@@ -197,6 +197,7 @@ def moving_average(xlsx,dataset):
   row = p 
   col = 2
   for x in range ((num_demand-p)+1):
+    print (demand[x:x+p])
     level = np.average(demand[x:x+p])
     lvl.append(level)
     moving_average.write (row,col,level) 
@@ -275,6 +276,11 @@ def moving_average(xlsx,dataset):
     moving_average.write (row,col,tracking) 
     row+=1
    
+  # plot the forecast
+  print (period[len(period)-len(fcast):len(period)])
+  plt.plot (period[len(period)-len(fcast):len(period)],fcast)
+  print (fcast)
+  plt.show()
 
 def simple_exponential_smoothing(xlsx,dataset):
   s_e = xlsx.add_worksheet('simple_exponential_smoothing')
@@ -289,8 +295,12 @@ def simple_exponential_smoothing(xlsx,dataset):
 
 
 if __name__ == "__main__":
+  dataset = 'data.csv' 
   xlsx = xlsxwriter.Workbook('generated_spreadsheet.xlsx')
-  dataset = 'data.csv'
+  if (len(sys.argv) >= 2):
+    dataset=sys.argv[1]
+  if (len(sys.argv) >= 3):
+    xlsx = xlsxwriter.Workbook(sys.argv[2])
   static_forecast(xlsx,dataset)
   moving_average(xlsx,dataset)
   simple_exponential_smoothing(xlsx,dataset)
