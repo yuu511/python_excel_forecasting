@@ -10,6 +10,7 @@ debug = False
 # generate error statistics (Error,ABS error, MSE , MAD, MAPE and TS)
 # based on forecast,error and demand, write on specified excel worksheet (w) beginning on (row,col)
 # NOTE: demand must equal the size of forecast for the calculation to be correct (Do array slicing BEFORE calling the function)
+# and will directly compare the two arrays by idnex
 def calculate_error(fcast,demand,w,row,col):
   o_row = row
   o_col = col
