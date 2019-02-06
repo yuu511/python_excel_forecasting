@@ -250,7 +250,7 @@ def moving_average(xlsx,dataset):
   # MAPE 
   row = p+1
   col = 9
-  for x in range (len(err)): 
+  for x in range (len(perr)): 
     mpe = np.sum(perr[0:x+1])/(x+1)
     mape.append(mpe)    
     moving_average.write (row,col,mpe) 
@@ -284,6 +284,28 @@ def moving_average(xlsx,dataset):
 def simple_exponential_smoothing(xlsx,dataset):
   s_e = xlsx.add_worksheet('simple_exponential_smoothing')
 
+  # our data 
+  data = pd.read_csv(dataset)
+  period = data['period'].values
+  demand = data['demand'].values 
+  periodicity = data['periodicity'].values
+  num_demand = len(demand)
+  num_period = len(period)
+  p = int(periodicity[0])
+
+  # init lists
+  lzero = None
+  alpha = 0.1
+  lvl = []
+  fcast = []
+  err = []
+  aerr = []
+  mse = []
+  mad = []
+  perr = []
+  mape = []
+  ts = []
+
   # column names
   c_names = ['Period','Demand','Level','Forecast','Error','Absolute Error','Squared Error (MSE)','MAD','% Error', 'MAPE','TS']
   row = 0 
@@ -291,7 +313,111 @@ def simple_exponential_smoothing(xlsx,dataset):
   for name in (c_names):
     s_e.write (row,col, name)
     col += 1
+
+  # calculate Level L0
+  row = 1
+  col = 0
+  s_e.write (row,col,0)
+  lzero = np.average(demand)
+  s_e.write (row,col+2,lzero)
+  
  
+  # fill out period
+  row = 2 
+  col = 0
+  for x in range (num_demand):
+    s_e.write (row,col, x+1)
+    row += 1
+
+  # Demand Data
+  row = 2 
+  col = 1
+  for x in range (num_demand):
+    s_e.write (row,col,demand[x]) 
+    row += 1
+
+  # Level
+  row = 2 
+  col = 2
+  lvl.append(lzero)
+  for x in range (num_demand):
+    level = (alpha * demand[x]) + ((1 - alpha) * lvl[x]) 
+    lvl.append(level)
+    s_e.write (row,col,level) 
+    row+=1
+ 
+  # Forecast
+  row = 2
+  col = 3
+  for x in range (len(lvl)-1):
+    forecast = lvl[x]
+    fcast.append(forecast)
+    s_e.write (row,col,forecast) 
+    row+=1
+  
+
+  # Error
+  row = 2
+  col = 4
+  for x in range (len(fcast)):
+    error = fcast[x] - demand [x]
+    err.append(error)
+    s_e.write (row,col,error) 
+    row+=1
+  
+  # Absolute error
+  row = 2
+  col = 5
+  for x in range (len(err)):
+    abserr = np.absolute(err[x]) 
+    aerr.append(abserr)
+    s_e.write (row,col,abserr) 
+    row+=1
+
+  # Squared root error (MSE)
+  row = 2
+  col = 6
+  for x in range (len(err)):
+    mean_square = np.sum(np.power(err[0:x+1],2))/(x+1)
+    mse.append(mean_square)    
+    s_e.write (row,col,mean_square) 
+    row+=1
+
+  # Mean absolute Deviation (MAD)
+  row = 2
+  col = 7
+  for x in range (len(aerr)):
+    meanad = np.sum(aerr[0:x+1])/(x+1)
+    mad.append(meanad)    
+    s_e.write (row,col,meanad) 
+    row+=1
+
+  # % error
+  row = 2
+  col = 8
+  for x in range (len(err)): 
+    percent = 100 * (aerr[x]/demand[x])
+    perr.append(percent)
+    s_e.write (row,col,percent) 
+    row += 1
+
+  # MAPE 
+  row = 2
+  col = 9
+  for x in range (len(perr)): 
+    mpe = np.sum(perr[0:x+1])/(x+1)
+    mape.append(mpe)    
+    s_e.write (row,col,mpe) 
+    row+=1
+     
+  # tracking signal
+  row = 2
+  col = 10
+  for x in range (len(err)): 
+    tracking = np.sum(err[0:x+1])/mad[x]
+    ts.append(tracking)    
+    s_e.write (row,col,tracking) 
+    row+=1
   
 
 
