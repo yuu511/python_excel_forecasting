@@ -435,9 +435,13 @@ if __name__ == "__main__":
   dataset = os.path.join(src_dir , 'data.csv')
   if (len(sys.argv) >= 2):
     dataset = sys.argv[1]
+    if not (os.path.exists(dataset)):
+      print (" Dataset : %s does not exist!" % dataset)
+      sys.exit(1)
     dataset = os.path.abspath(dataset)
   if (len(sys.argv) >= 3):
     dirname = sys.argv[2]
+  # make directory for all files to be stored in(excel file, and graphs)
   if (os.path.exists(dirname)):
     while (1):
       print ("The directory you are trying to save your files to :\n[ %s ]\nalready exists. delete it? y/n" % dirname)
@@ -466,9 +470,10 @@ if __name__ == "__main__":
     except OSError as e:
       print ("Error in making directory!") 
       sys.exit(1)
+
+  # make graph directory to store all graph pictures in
   graphpath = os.path.abspath(os.path.join(dirname,'graphs'))
   os.mkdir(graphpath)
-  print (graphpath)
   dataset   = os.path.abspath(dataset)
   dirname   = os.path.abspath(dirname)
   xlsx = xlsxwriter.Workbook(os.path.join(dirname,'generated_spreadsheet.xlsx'))

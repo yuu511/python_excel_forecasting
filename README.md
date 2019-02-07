@@ -1,5 +1,4 @@
 Generates a static, moving average, and simple exponential smoothing excel spreadsheet in the same directory the program is run.
-Run gen.py in the src folder.
 
 REQUIREMENTS:
 -  Python3
