@@ -125,6 +125,7 @@ def static_forecast(xlsx,data,dirpath):
   reg_demand  = []
   sea_factors = []
   fcast       = []
+  fcasted = []
   avg_sea     = [0] * p
   occurences_s= copy.deepcopy(avg_sea)
 
@@ -241,8 +242,19 @@ def static_forecast(xlsx,data,dirpath):
   # write error column names and calculate error statistics 
   err,aerr,mse,mad,perr,mape,ts = calculate_error(fcast,demand,static_forecast,1,8)
   
+  # forecast predict ( up to demand length + p in this case ) 
+  row = (num_demand + 1)
+  col = 7
+  for x in range (num_demand,num_demand+p):
+    period = np.concatenate([period,[x+1]])
+    predict = avg_sea[x%p] * ((slope * (x+1))+intercept)
+    fcast.append(predict)
+    fcasted.append(predict)
+    static_forecast.write (row,col,predict) 
+    row +=1
+  
   # plot regressed, deseasonalized demand and reseasonalized demand
-  graph_fcast_demand(period,demand,period,fcast,'static_forecast',dirpath)
+  graph_fcast_demand(period[0:num_demand],demand,period,fcast,'static_forecast',dirpath)
 
   # debug print statements
   if (debug):
@@ -271,6 +283,7 @@ def moving_average(xlsx,data,dirpath):
   perr = []
   mape = []
   ts = []
+  fcasted = []
 
   # our data 
   period = data['period'].values
@@ -323,8 +336,22 @@ def moving_average(xlsx,data,dirpath):
   # write error column names and calculate error statistics 
   err,aerr,mse,mad,perr,mape,ts = calculate_error(fcast,demand[p:len(demand)],moving_average,p+1,4)
 
-  # plot the forecast
-  graph_fcast_demand(period, demand, period[len(period)-len(fcast):len(period)],fcast,'moving_average_forecast',dirpath)
+  # forecast predict ( up to demand length + p in this case ) 
+  row = (len(fcast) + p + 1 )
+  col = 3
+  for x in range (len(fcast),len(fcast)+p):
+    # period = np.concatenate([period,[x+1]])
+    predict = fcast[len(fcast)-1]
+    fcast.append(predict)
+    fcasted.append(predict)
+    moving_average.write (row,col,predict) 
+    row +=1
+
+  # plot moving average forecast
+  graph_fcast_demand(period[0:num_demand],demand,period,fcast,'moving_average_forecast.png',dirpath)
+
+  # # plot the forecast
+  # graph_fcast_demand(period, demand, period[len(period)-len(fcast):len(period)],fcast,'moving_average_forecast',dirpath)
 
   # debug
   if (debug):
@@ -354,6 +381,7 @@ def simple_exponential_smoothing(xlsx,data,dirpath,alpha):
   lzero = None
   lvl   = []
   fcast = []
+  fcasted = []
   err   = []
   aerr  = []
   mse   = []
@@ -411,8 +439,23 @@ def simple_exponential_smoothing(xlsx,data,dirpath,alpha):
     s_e.write (row,col,forecast) 
     row+=1
  
+
   # write error column names and calculate error statistics 
   err,aerr,mse,mad,perr,mape,ts = calculate_error(fcast,demand,s_e,2,4)
+
+  # forecast predict ( up to demand length + p in this case ) 
+  row = (len(fcast) + 2 )
+  col = 3
+  for x in range (len(fcast),len(fcast)+p):
+    period = np.concatenate([period,[x+1]])
+    predict = fcast[len(fcast)-1]
+    fcast.append(predict)
+    fcasted.append(predict)
+    s_e.write (row,col,predict) 
+    row +=1
+
+  # plot simple exp smoothing
+  graph_fcast_demand(period[0:num_demand],demand,period,fcast,'simple_exp_smoothing.png',dirpath)
 
   # debug
   if (debug):
@@ -426,8 +469,6 @@ def simple_exponential_smoothing(xlsx,data,dirpath,alpha):
     print("mape \n %r" % mape )
     print("ts   \n %r" % ts   )
 
-  # plot simple exponential smoothing graph
-  graph_fcast_demand(period,demand,period,fcast,'exponential_smoothing_forecast.png',dirpath)
 
 # calculate forecast with simple exponential smoothing
 def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
@@ -447,6 +488,7 @@ def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
   lvl   = []
   tnd   = []
   fcast = []
+  fcasted = []
   err   = []
   aerr  = []
   mse   = []
@@ -518,8 +560,22 @@ def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
   # write error column names and calculate error statistics 
   err,aerr,mse,mad,perr,mape,ts = calculate_error(fcast,demand,ht,2,5)
 
+  # forecast predict ( up to demand length + p in this case ) 
+  row = num_demand+2
+  col = 4
+  print (len(fcast)-1)
+  print (len(tnd)-1)
+  for x in range (num_demand,num_demand+p):
+    period = np.concatenate([period,[x+1]])
+    predict = (fcast [len(fcast)-1] + ((x-num_demand + 1) * tnd[len(tnd)-1]))
+    fcast.append(predict)
+    fcasted.append(predict)
+    ht.write (row,col,predict) 
+    row +=1
+
+
   # plot holt smoothing
-  graph_fcast_demand(period,demand,period,fcast,'holt_trend_correct_forecast.png',dirpath)
+  graph_fcast_demand(period[0:num_demand],demand,period,fcast,'holt_trend_forecast.png',dirpath)
 
   # debug
   if (debug):
