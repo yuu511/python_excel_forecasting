@@ -196,6 +196,8 @@ def static_forecast(xlsx,data,dirpath):
   # Demand data, deseasonalized and regressed
   des_x = np.array(des_x)
   des_demand = np.array(des_demand)
+  print (des_x)
+  print (des_demand)
   slope, intercept, r_value, p_value, std_err = stats.linregress(des_x,des_demand)
   row = 1
   col = 4
