@@ -12,19 +12,20 @@ BUILD:
 -  python -m pip install -r requirements.txt --user
 
 RUN:
-Three different ways of running the program.
+- Run gen.py in the src folder
+- Options to run the program:
 
 No arguments:
 - % python gen.py : Runs the program with the default python_excel_forecasting/data/data.csv  as the dataset. Creates a directory (graphs+excel_directory) with an excel file generated_spreadsheet.xlsx and a subdirectory 'graphs' with forecast diagrams in the current working directory.
 
 1 Argument:
 - %  python gen.py [DATASET] : Runs the program with [DATASET]  as the dataset. Creates a directory (graphs+excel_directory) with an excel file generated_spreadsheet.xlsx and a subdirectory 'graphs' with forecast diagrams in the current working directory
-- example: % python3 gen.py data2.csv
+- example: % python gen.py data2.csv
 
 2 Arguments:
 
 - %  python gen.py [DATASET] [FILEPATH] : Runs the program with [DATASET]  as the dataset. Creates a directory [FILEPATH] with an excel file generated_spreadsheet.xlsx and a subdirectory 'graphs' with forecast diagrams
-- example: % python3  gen.py /home/foo/bar  
+- example: % python gen.py /home/foo/bar  
 
 DATA:
 Data is formatted in a CSV file: data.csv.
