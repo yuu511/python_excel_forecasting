@@ -15,18 +15,15 @@ RUN:
 Three different ways of running the program.
 
 No arguments:
-- %  python3 gen.py : Runs the program with the default src/data.csv  as the dataset. Creates a directory (graphs+excel_directory) with an excel file generated_spreadsheet.xlsx
-and a subdirectory graphs with forecast diagrams
+- %  python3 gen.py : Runs the program with the default src/data.csv  as the dataset. Creates a directory (graphs+excel_directory) with an excel file generated_spreadsheet.xlsx and a subdirectory 'graphs' with forecast diagrams
 
 1 Argument:
-- %  python3 gen.py [DATASET] : Runs the program with [DATASET]  as the dataset. Creates a directory (graphs+excel_directory) with an excel file generated_spreadsheet.xlsx
-and a subdirectory graphs with forecast diagrams
+- %  python3 gen.py [DATASET] : Runs the program with [DATASET]  as the dataset. Creates a directory (graphs+excel_directory) with an excel file generated_spreadsheet.xlsx and a subdirectory 'graphs' with forecast diagrams
 - example: %python3 gen.py data2.csv
 
 2 Arguments:
 
-- %  python3 gen.py [DATASET] [FILEPATH] : Runs the program with [DATASET]  as the dataset. Creates a directory [FILEPATH] with an excel file generated_spreadsheet.xlsx
-and a subdirectory graphs with forecast diagrams
+- %  python3 gen.py [DATASET] [FILEPATH] : Runs the program with [DATASET]  as the dataset. Creates a directory [FILEPATH] with an excel file generated_spreadsheet.xlsx and a subdirectory 'graphs' with forecast diagrams
 - example: %python3 gen.py /home/foo/bar 
 
 DATA:
