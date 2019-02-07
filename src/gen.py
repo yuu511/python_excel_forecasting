@@ -345,7 +345,7 @@ def moving_average(xlsx,data,dirpath):
   col = 3
   for x in range (len(fcast),len(fcast)+num_predicted):
     # period = np.concatenate([period,[x+1]])
-    predict = fcast[len(fcast)-1]
+    predict = lvl[len(lvl)-1]
     fcast.append(predict)
     fcasted.append(predict)
     moving_average.write (row,col,predict) 
@@ -452,7 +452,7 @@ def simple_exponential_smoothing(xlsx,data,dirpath,alpha):
   col = 3
   for x in range (len(fcast),len(fcast)+p):
     period = np.concatenate([period,[x+1]])
-    predict = fcast[len(fcast)-1]
+    predict = lvl[len(lvl)-1]
     fcast.append(predict)
     fcasted.append(predict)
     s_e.write (row,col,predict) 
@@ -474,7 +474,7 @@ def simple_exponential_smoothing(xlsx,data,dirpath,alpha):
     print("ts   \n %r" % ts   )
 
 
-# calculate forecast with simple exponential smoothing
+# calculate forecast with holt trend smoothing
 def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
   ht = xlsx.add_worksheet('holt_trend_exp_smoothing')
 
@@ -790,7 +790,7 @@ if __name__ == "__main__":
   os.mkdir(graphpath)
   dirname   = os.path.abspath(dirname)
   xlsx = xlsxwriter.Workbook(os.path.join(dirname,'generated_spreadsheet.xlsx'))
-  alpha = 0.1
+  alpha = 0.9
   beta = 0.1
   gamma = 0.09
  
