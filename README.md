@@ -1,4 +1,4 @@
-Generates a static, moving average, and simple exponential smoothing excel spreadsheet in the same directory the program is run.
+Generates a static, moving average, and simple exponential smoothing excel spreadsheet.
 
 REQUIREMENTS:
 -  Python3
