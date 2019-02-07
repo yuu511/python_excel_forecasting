@@ -790,7 +790,7 @@ if __name__ == "__main__":
   os.mkdir(graphpath)
   dirname   = os.path.abspath(dirname)
   xlsx = xlsxwriter.Workbook(os.path.join(dirname,'generated_spreadsheet.xlsx'))
-  alpha = 0.9
+  alpha = 0.1
   beta = 0.1
   gamma = 0.09
  
