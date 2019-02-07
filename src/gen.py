@@ -643,8 +643,6 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
   # plot winter smoothing
   graph_fcast_demand(period[0:num_demand],demand,period,fcast,'winter_trend_season_forecast.png',dirpath)
 
-  print (period)
-  print (fcast)
   # debug
   if (debug):
     print("lvl  \n %r" % lvl  )
