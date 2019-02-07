@@ -100,7 +100,7 @@ def calculate_error(fcast,demand,w,row,col):
   return err,aerr,mse,mad,perr,mape,ts
    
 # calcualte static forecast
-def static_forecast(xlsx,dataset):
+def static_forecast(xlsx,dataset,dirpath):
   static_forecast = xlsx.add_worksheet('static_foreast')
   data = None
 
@@ -233,7 +233,7 @@ def static_forecast(xlsx,dataset):
   plt.plot (period,reg_demand,period,fcast)
   plt.ylabel('demand')
   plt.xlabel('period')
-  plt.savefig('./graphs/static_forecasting.png')
+  plt.savefig(os.path.join(dirpath,'static_forecast.png'))
   plt.close()
 
   # debug print statements
@@ -247,7 +247,7 @@ def static_forecast(xlsx,dataset):
     print ("reseasonalized_demand  %r " %  fcast )
 
 # calculate moving average forecast
-def moving_average(xlsx,dataset):
+def moving_average(xlsx,dataset,dirpath):
   moving_average = xlsx.add_worksheet('moving_average')
 
   # init lists
@@ -315,7 +315,7 @@ def moving_average(xlsx,dataset):
 
   # plot the forecast
   plt.plot (period, demand, period[len(period)-len(fcast):len(period)],fcast)
-  plt.savefig('./graphs/moving_average.png')
+  plt.savefig(os.path.join(dirpath,'moving_average_forecast.png'))
   plt.ylabel('demand')
   plt.xlabel('period')
   plt.close()
@@ -333,7 +333,7 @@ def moving_average(xlsx,dataset):
     print("ts   \n %r" % ts   )
 
 # calculate forecast with simple exponential smoothing
-def simple_exponential_smoothing(xlsx,dataset,alpha):
+def simple_exponential_smoothing(xlsx,dataset,dirpath,alpha):
   s_e = xlsx.add_worksheet('simple_exponential_smoothing')
 
   # our data 
@@ -421,23 +421,23 @@ def simple_exponential_smoothing(xlsx,dataset,alpha):
     print("mape \n %r" % mape )
     print("ts   \n %r" % ts   )
 
-  # plot regressed, deseasonalized demand and reseasonalized demand
+  # plot simple exponential smoothing graph
   plt.plot (period, demand, period,fcast)
   plt.ylabel('demand')
   plt.xlabel('period')
-  plt.savefig('./graphs/simple_smoothing.png')
+  plt.savefig(os.path.join(dirpath,'exponential_smoothing_forecast.png'))
   plt.close()
 
 if __name__ == "__main__":
-  o_wd = os.getcwd()
   src_path = os.path.abspath(__file__)
   src_dir =  os.path.dirname(src_path)
   dirname= 'graphs+excel_directory'
-  dataset = src_dir +'/data.csv'
+  dataset = os.path.join(src_dir , 'data.csv')
   if (len(sys.argv) >= 2):
     dataset = sys.argv[1]
+    dataset = os.path.abspath(dataset)
   if (len(sys.argv) >= 3):
-     dirname = sys.argv[2]
+    dirname = sys.argv[2]
   if (os.path.exists(dirname)):
     while (1):
       print ("The directory you are trying to save your files to :\n[ %s ]\nalready exists. delete it? y/n" % dirname)
@@ -466,12 +466,14 @@ if __name__ == "__main__":
     except OSError as e:
       print ("Error in making directory!") 
       sys.exit(1)
-  os.chdir(dirname)
-  os.mkdir('graphs')
-  xlsx = xlsxwriter.Workbook('generated_spreadsheet')
-  static_forecast(xlsx,dataset)
-  moving_average(xlsx,dataset)
+  graphpath = os.path.abspath(os.path.join(dirname,'graphs'))
+  os.mkdir(graphpath)
+  print (graphpath)
+  dataset   = os.path.abspath(dataset)
+  dirname   = os.path.abspath(dirname)
+  xlsx = xlsxwriter.Workbook(os.path.join(dirname,'generated_spreadsheet.xlsx'))
+  static_forecast(xlsx,dataset,graphpath)
+  moving_average(xlsx,dataset,graphpath)
   alpha = 0.1
-  simple_exponential_smoothing(xlsx,dataset,alpha)
+  simple_exponential_smoothing(xlsx,dataset,graphpath,alpha)
   xlsx.close()
-  os.chdir(o_wd)
