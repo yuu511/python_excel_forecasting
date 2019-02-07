@@ -427,15 +427,22 @@ def simple_exponential_smoothing(xlsx,data,dirpath,alpha):
 if __name__ == "__main__":
   src_path = os.path.abspath(__file__)
   src_dir =  os.path.dirname(src_path)
+  root_dir = os.path.normpath(os.path.join(src_dir,os.pardir))
+  data_dir = os.path.join(root_dir,'data')
+  if not (os.path.exists(data_dir)):
+    print("Data directory %s does not exist!" % data_dir)
+    sys.exit(1)
+  
   dirname= 'graphs+excel_directory'
-  dataset = os.path.join(src_dir , 'data.csv')
-  if (len(sys.argv) >= 2):
+  dataset = os.path.join(data_dir , 'data.csv')
+  arglen = len(sys.argv)
+  if (arglen >= 2):
     dataset = sys.argv[1]
     if not (os.path.exists(dataset)):
       print (" Dataset : %s does not exist!" % dataset)
       sys.exit(1)
     dataset = os.path.abspath(dataset)
-  if (len(sys.argv) >= 3):
+  if (arglen >= 3):
     dirname = sys.argv[2]
   # make directory for all files to be stored in(excel file, and graphs)
   if (os.path.exists(dirname)):

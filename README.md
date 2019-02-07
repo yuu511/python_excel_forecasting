@@ -15,16 +15,16 @@ RUN:
 Three different ways of running the program.
 
 No arguments:
-- %  python gen.py : Runs the program with the default src/data.csv  as the dataset. Creates a directory (graphs+excel_directory) with an excel file generated_spreadsheet.xlsx and a subdirectory 'graphs' with forecast diagrams
+- % python gen.py : Runs the program with the default python_excel_forecasting/data/data.csv  as the dataset. Creates a directory (graphs+excel_directory) with an excel file generated_spreadsheet.xlsx and a subdirectory 'graphs' with forecast diagrams in the current working directory.
 
 1 Argument:
-- %  python gen.py [DATASET] : Runs the program with [DATASET]  as the dataset. Creates a directory (graphs+excel_directory) with an excel file generated_spreadsheet.xlsx and a subdirectory 'graphs' with forecast diagrams
-- example: %python3 gen.py data2.csv
+- %  python gen.py [DATASET] : Runs the program with [DATASET]  as the dataset. Creates a directory (graphs+excel_directory) with an excel file generated_spreadsheet.xlsx and a subdirectory 'graphs' with forecast diagrams in the current working directory
+- example: % python3 gen.py data2.csv
 
 2 Arguments:
 
 - %  python gen.py [DATASET] [FILEPATH] : Runs the program with [DATASET]  as the dataset. Creates a directory [FILEPATH] with an excel file generated_spreadsheet.xlsx and a subdirectory 'graphs' with forecast diagrams
-- example: %python3 gen.py /home/foo/bar 
+- example: % python3  gen.py /home/foo/bar  
 
 DATA:
 Data is formatted in a CSV file: data.csv.
@@ -36,4 +36,4 @@ PERIOD / DEMAND / PERIODICITY
 
 - Periodicity: Single number (which will denote the seasonality of the data)
 
-( look at data.csv for an example. )
+( look at data/data.csv for an example. )
