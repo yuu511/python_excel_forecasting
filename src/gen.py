@@ -7,6 +7,7 @@ import sys
 import os
 import shutil
 import copy
+import math
 
 debug = False
 
@@ -128,6 +129,7 @@ def static_forecast(xlsx,data,dirpath):
   fcasted = []
   avg_sea     = [0] * p
   occurences_s= copy.deepcopy(avg_sea)
+  num_predicted = p
 
   # error statistics
   err = []
@@ -197,9 +199,9 @@ def static_forecast(xlsx,data,dirpath):
   # Demand data, deseasonalized and regressed
   des_x = np.array(des_x)
   des_demand = np.array(des_demand)
-  print (des_x)
-  print (des_demand)
-  slope, intercept, r_value, p_value, std_err = stats.linregress(des_x,des_demand)
+
+  slope,intercept, r_value, p_value, std_err = stats.linregress(des_x,des_demand)
+
   row = 1
   col = 4
   for x in range (num_demand):
@@ -245,7 +247,7 @@ def static_forecast(xlsx,data,dirpath):
   # forecast predict ( up to demand length + p in this case ) 
   row = (num_demand + 1)
   col = 7
-  for x in range (num_demand,num_demand+p):
+  for x in range (num_demand,num_demand+num_predicted):
     period = np.concatenate([period,[x+1]])
     predict = avg_sea[x%p] * ((slope * (x+1))+intercept)
     fcast.append(predict)
@@ -273,6 +275,15 @@ def static_forecast(xlsx,data,dirpath):
 def moving_average(xlsx,data,dirpath):
   moving_average = xlsx.add_worksheet('moving_average')
 
+  # our data 
+  period = data['period'].values
+  demand = data['demand'].values 
+  periodicity = data['periodicity'].values
+  num_demand = len(demand)
+  num_period = len(period)
+  p = int(periodicity[0])
+  num_predicted = p
+
   # init lists
   lvl = []
   fcast = []
@@ -285,13 +296,6 @@ def moving_average(xlsx,data,dirpath):
   ts = []
   fcasted = []
 
-  # our data 
-  period = data['period'].values
-  demand = data['demand'].values 
-  periodicity = data['periodicity'].values
-  num_demand = len(demand)
-  num_period = len(period)
-  p = int(periodicity[0])
 
   # column names
   c_names = ['Period','Demand','Level','Forecast']
@@ -337,9 +341,9 @@ def moving_average(xlsx,data,dirpath):
   err,aerr,mse,mad,perr,mape,ts = calculate_error(fcast,demand[p:len(demand)],moving_average,p+1,4)
 
   # forecast predict ( up to demand length + p in this case ) 
-  row = (len(fcast) + p + 1 )
+  row = (len(fcast) + 1 + p)
   col = 3
-  for x in range (len(fcast),len(fcast)+p):
+  for x in range (len(fcast),len(fcast)+num_predicted):
     # period = np.concatenate([period,[x+1]])
     predict = fcast[len(fcast)-1]
     fcast.append(predict)
@@ -402,7 +406,7 @@ def simple_exponential_smoothing(xlsx,data,dirpath,alpha):
   row = 1
   col = 0
   s_e.write (row,col,0)
-  lzero = np.average(demand)
+  lzero = round(np.average(demand))
   s_e.write (row,col+2,lzero)
   
  
@@ -481,6 +485,7 @@ def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
   num_demand = len(demand)
   num_period = len(period)
   p = int(periodicity[0])
+  num_predicted = p
 
   # init lists
   lzero = None
@@ -511,14 +516,14 @@ def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
   row = 1
   col = 0
   ht.write (row,col,0)
-  lzero = intercept
+  lzero = round(intercept)
   ht.write (row,col+2,lzero)
   
   # calculate Trend T0
   row = 1
   col = 3
-  tzero = slope
-  ht.write (row,col,slope)
+  tzero = round(slope)
+  ht.write (row,col,tzero)
   
   # fill out period
   row = 2 
@@ -563,9 +568,7 @@ def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
   # forecast predict ( up to demand length + p in this case ) 
   row = num_demand+2
   col = 4
-  print (len(fcast)-1)
-  print (len(tnd)-1)
-  for x in range (num_demand,num_demand+p):
+  for x in range (num_demand,num_demand+num_predicted):
     period = np.concatenate([period,[x+1]])
     predict = (fcast [len(fcast)-1] + ((x-num_demand + 1) * tnd[len(tnd)-1]))
     fcast.append(predict)
@@ -601,6 +604,7 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
   num_demand = len(demand)
   num_period = len(period)
   p = int(periodicity[0])
+  num_predicted = p
 
   # init lists
   lzero = None
@@ -617,7 +621,6 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
   mape  = []
   ts    = []
   fcasted = []
-  num_fcast = p
    
   # column names
   c_names = ['Period','Demand','Level','Trend','Seasonal Factor','Forecast']
@@ -643,7 +646,7 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
   # fill out period
   row = 2 
   col = 0
-  for x in range (num_demand+num_fcast):
+  for x in range (num_demand+num_predicted):
     wt.write (row,col, x+1)
     row += 1
 
@@ -683,10 +686,14 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
     wt.write (row,col,forecast)
     row += 1
   
+
+  # write error column names and calculate error statistics 
+  err,aerr,mse,mad,perr,mape,ts = calculate_error(fcast,demand,wt,2,6)
+
   # forecast predict ( up to demand length + p in this case ) 
   row = num_demand+2
   col = 4
-  for x in range (num_demand,num_demand+num_fcast):
+  for x in range (num_demand,num_demand+num_predicted):
     period = np.concatenate([period,[x+1]])
     predict = (lvl [num_demand-1] + ((x-num_demand) * tnd[num_demand-1]))* sea [x] 
     fcast.append(predict)
@@ -694,9 +701,6 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
     wt.write (row,col,sea[x]) 
     wt.write (row,col+1,predict) 
     row +=1
-
-  # write error column names and calculate error statistics 
-  err,aerr,mse,mad,perr,mape,ts = calculate_error(fcast[0:num_demand],demand,wt,2,6)
 
   # plot winter smoothing
   graph_fcast_demand(period[0:num_demand],demand,period,fcast,'winter_trend_season_forecast.png',dirpath)
@@ -788,7 +792,14 @@ if __name__ == "__main__":
   xlsx = xlsxwriter.Workbook(os.path.join(dirname,'generated_spreadsheet.xlsx'))
   alpha = 0.1
   beta = 0.1
-  gamma = 0.05
+  gamma = 0.09
+ 
+  print ("alpha:")
+  print (alpha)
+  print ("beta:")
+  print (beta)
+  print ("gamma:")
+  print (gamma)
 
   # make the forecasts
   # return slope,intercept of regression and seasonal factors of deseasonalized demand for winter forecasting
