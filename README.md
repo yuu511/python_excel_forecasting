@@ -30,9 +30,9 @@ DATA:
 Data is formatted in a CSV file: data.csv.
 PERIOD / DEMAND / PERIODICITY
 
-- Where period is any ascending numerical series (1,2,3,4,5...)
+- Where period is any number of integers
 
-- Demand is any amount of numbers
+- Demand is any amount of integers (with a length equal to the period)
 
 - Periodicity: Single number (which will denote the seasonality of the data)
 
