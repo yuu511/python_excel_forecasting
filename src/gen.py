@@ -100,9 +100,8 @@ def calculate_error(fcast,demand,w,row,col):
   return err,aerr,mse,mad,perr,mape,ts
    
 # calcualte static forecast
-def static_forecast(xlsx,dataset,dirpath):
+def static_forecast(xlsx,data,dirpath):
   static_forecast = xlsx.add_worksheet('static_foreast')
-  data = None
 
   # init lists
   period      = []
@@ -124,7 +123,6 @@ def static_forecast(xlsx,dataset,dirpath):
   ts = []
   
   # our data 
-  data = pd.read_csv(dataset)
   period = data['period'].values
   demand = data['demand'].values 
   periodicity = data['periodicity'].values
@@ -247,7 +245,7 @@ def static_forecast(xlsx,dataset,dirpath):
     print ("reseasonalized_demand  %r " %  fcast )
 
 # calculate moving average forecast
-def moving_average(xlsx,dataset,dirpath):
+def moving_average(xlsx,data,dirpath):
   moving_average = xlsx.add_worksheet('moving_average')
 
   # init lists
@@ -262,7 +260,6 @@ def moving_average(xlsx,dataset,dirpath):
   ts = []
 
   # our data 
-  data = pd.read_csv(dataset)
   period = data['period'].values
   demand = data['demand'].values 
   periodicity = data['periodicity'].values
@@ -333,11 +330,10 @@ def moving_average(xlsx,dataset,dirpath):
     print("ts   \n %r" % ts   )
 
 # calculate forecast with simple exponential smoothing
-def simple_exponential_smoothing(xlsx,dataset,dirpath,alpha):
+def simple_exponential_smoothing(xlsx,data,dirpath,alpha):
   s_e = xlsx.add_worksheet('simple_exponential_smoothing')
 
   # our data 
-  data = pd.read_csv(dataset)
   period = data['period'].values
   demand = data['demand'].values 
   periodicity = data['periodicity'].values
@@ -471,14 +467,26 @@ if __name__ == "__main__":
       print ("Error in making directory!") 
       sys.exit(1)
 
+  # read andcheck validity of dataset before doing anything
+  dataset   = os.path.abspath(dataset)
+  data = pd.read_csv(dataset)
+  if not ('period' in data):
+    print ("no period in csv")
+    sys.exit(1)
+  if not ('demand' in data):
+    print ("no demand data")
+    sys.exit(1)
+  if not ('periodicity' in data):
+    print ("no periodicity data")
+    sys.exit(1)
+
   # make graph directory to store all graph pictures in
   graphpath = os.path.abspath(os.path.join(dirname,'graphs'))
   os.mkdir(graphpath)
-  dataset   = os.path.abspath(dataset)
   dirname   = os.path.abspath(dirname)
   xlsx = xlsxwriter.Workbook(os.path.join(dirname,'generated_spreadsheet.xlsx'))
-  static_forecast(xlsx,dataset,graphpath)
-  moving_average(xlsx,dataset,graphpath)
+  static_forecast(xlsx,data,graphpath)
+  moving_average(xlsx,data,graphpath)
   alpha = 0.1
-  simple_exponential_smoothing(xlsx,dataset,graphpath,alpha)
+  simple_exponential_smoothing(xlsx,data,graphpath,alpha)
   xlsx.close()
