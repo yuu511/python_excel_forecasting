@@ -406,7 +406,7 @@ def simple_exponential_smoothing(xlsx,data,dirpath,alpha):
   row = 1
   col = 0
   s_e.write (row,col,0)
-  lzero = round(np.average(demand))
+  lzero = np.average(demand)
   s_e.write (row,col+2,lzero)
   
  
@@ -516,13 +516,13 @@ def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
   row = 1
   col = 0
   ht.write (row,col,0)
-  lzero = round(intercept)
+  lzero = intercept
   ht.write (row,col+2,lzero)
   
   # calculate Trend T0
   row = 1
   col = 3
-  tzero = round(slope)
+  tzero = slope
   ht.write (row,col,tzero)
   
   # fill out period
@@ -790,9 +790,9 @@ if __name__ == "__main__":
   os.mkdir(graphpath)
   dirname   = os.path.abspath(dirname)
   xlsx = xlsxwriter.Workbook(os.path.join(dirname,'generated_spreadsheet.xlsx'))
-  alpha = 0.1
-  beta = 0.1
-  gamma = 0.09
+  alpha = 0.06
+  beta = 0.06	
+  gamma = 0.06
  
   print ("alpha:")
   print (alpha)
