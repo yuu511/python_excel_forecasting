@@ -11,6 +11,38 @@ import math
 
 debug = False
 
+# simple class object to return original demand , forecast , and error statistics
+class forecast_results:
+  def __init__ (self,demand,forecast,err,aerr,mse,mad,perr,mape,ts):
+    self.demand = demand
+    self.forecast = forecast
+    self.err = err
+    self.aerr = aerr
+    self.mse = mse
+    self.mad = mad
+    self.perr = perr
+    self.mape = mape
+    self.ts = ts
+  def get_demand(self):
+   return self.demand
+  def get_forecast(self):
+   return self.forecast
+  def get_error(self):
+   return self.err
+  def get_absolute_error(self):
+   return self.aerr
+  def get_MSE(self):
+   return self.MSE
+  def get_MAD(self):
+   return self.mad
+  def get_percent_error(self):
+   return self.perr
+  def get_MAPE(self):
+   return self.mape
+  def get_tracking_signal(self):
+   return self.ts
+
+# plot demand vs forecast
 def graph_fcast_demand(fperiod,forecast,period,demand,name,path):
   plt.plot (fperiod,forecast,period,demand)
   plt.ylabel('demand')
@@ -269,7 +301,8 @@ def static_forecast(xlsx,data,dirpath):
     print ("reseasonalized_demand  %r " %  fcast )
 
   # return linear regression of deseasonalized data and average seasonal factors for winter regression
-  return slope,intercept,avg_sea
+  f = forecast_results(demand,fcast,err,aerr,mse,mad,perr,mape,ts)
+  return f,slope,intercept,avg_sea
 
 # calculate moving average forecast
 def moving_average(xlsx,data,dirpath):
@@ -368,6 +401,9 @@ def moving_average(xlsx,data,dirpath):
     print("perr \n %r" % perr )
     print("mape \n %r" % mape )
     print("ts   \n %r" % ts   )
+
+  f = forecast_results(demand,fcast,err,aerr,mse,mad,perr,mape,ts)
+  return f
 
 # calculate forecast with simple exponential smoothing
 def simple_exponential_smoothing(xlsx,data,dirpath,alpha):
@@ -473,6 +509,8 @@ def simple_exponential_smoothing(xlsx,data,dirpath,alpha):
     print("mape \n %r" % mape )
     print("ts   \n %r" % ts   )
 
+  f = forecast_results(demand,fcast,err,aerr,mse,mad,perr,mape,ts)
+  return f
 
 # calculate forecast with holt trend smoothing
 def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
@@ -592,6 +630,9 @@ def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
     print("perr \n %r" % perr )
     print("mape \n %r" % mape )
     print("ts   \n %r" % ts   )
+
+  f = forecast_results(demand,fcast,err,aerr,mse,mad,perr,mape,ts)
+  return f
 
 # calculate forecast with simple exponential smoothing
 def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,intercept,avg_sea):
@@ -718,6 +759,9 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
     print("mape \n %r" % mape )
     print("ts   \n %r" % ts   )
 
+  f = forecast_results(demand,fcast,err,aerr,mse,mad,perr,mape,ts)
+  return f
+
 if __name__ == "__main__":
   src_path = os.path.abspath(__file__)
   src_dir =  os.path.dirname(src_path)
@@ -803,9 +847,9 @@ if __name__ == "__main__":
 
   # make the forecasts
   # return slope,intercept of regression and seasonal factors of deseasonalized demand for winter forecasting
-  slope, intercept, avg_sea = static_forecast(xlsx,data,graphpath)
-  moving_average(xlsx,data,graphpath)
-  simple_exponential_smoothing(xlsx,data,graphpath,alpha)
-  holt_trend_corrected_exponential_smoothing(xlsx,data,graphpath,alpha,beta)
-  winter_trend_seasonality_forecast(xlsx,data,graphpath,alpha,beta,gamma,slope,intercept,avg_sea)
+  static_fcast, slope, intercept, avg_sea = static_forecast(xlsx,data,graphpath)
+  moving_average = moving_average(xlsx,data,graphpath)
+  simple_exponential_smoothing = simple_exponential_smoothing(xlsx,data,graphpath,alpha)
+  holt = holt_trend_corrected_exponential_smoothing(xlsx,data,graphpath,alpha,beta)
+  winter = winter_trend_seasonality_forecast(xlsx,data,graphpath,alpha,beta,gamma,slope,intercept,avg_sea)
   xlsx.close()
