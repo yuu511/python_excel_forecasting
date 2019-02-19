@@ -8,9 +8,30 @@ import os
 import shutil
 import copy
 import math
+import string
 
 debug = False
 
+
+# converts a column,row to an excel-style cell name
+# (columns and rows are numbered 0 , 1 , 2 ... n )
+def excel_cell(row,col):
+  alphabet = dict(zip(range(0,26),string.ascii_uppercase))
+  ret_col = ""
+  n = int ((col / 26)+1)
+  result = col
+  for x in range (n):
+   result,remainder = divmod(result,26)
+   ret_col = ret_col + alphabet[remainder]
+  
+  if not string:
+    sys.exit("excel_cell conversion err!")
+
+  # row
+  ret_row = row + 1
+  return ret_col+str(ret_row)
+   
+# graph forecast vs demand
 def graph_fcast_demand(fperiod,forecast,period,demand,name,path):
   plt.plot (fperiod,forecast,period,demand)
   plt.ylabel('demand')
@@ -180,7 +201,8 @@ def static_forecast(xlsx,data,dirpath):
       des=(demand[lower] + demand[upper]+(2 * np.sum(demand[lower+1:upper])))/(2*p)
       des_x.append(x)
       des_demand.append(des)
-      static_forecast.write (row,col,des) 
+      static_forecast.write_formula (excel_cell(row,col),"=(" + excel_cell(lower+1,2) + "+" + excel_cell(upper+1,2) + "+" + "2*SUM(" + excel_cell (lower+2,2) + ":" + excel_cell (upper,2) + "))" + "/8") 
+      # static_forecast.write (row,col,des) 
       row += 1
   else:
     min_val = int (((p-1)/2)+1)
