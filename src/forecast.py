@@ -608,12 +608,12 @@ def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
   col = 4
   for x in range (num_demand,num_demand+num_predicted):
     period = np.concatenate([period,[x+1]])
-    predict = (fcast [len(fcast)-1] + ((x-num_demand + 1) * tnd[len(tnd)-1]))
+    print (x-num_demand+1)
+    predict = (lvl[len(lvl)-1] + ((x-num_demand+1) * tnd[len(tnd)-1]))
     fcast.append(predict)
     fcasted.append(predict)
     ht.write (row,col,predict) 
     row +=1
-
 
   # plot holt smoothing
   graph_fcast_demand(period[0:num_demand],demand,period,fcast,'holt_trend_forecast.png',dirpath)
@@ -762,94 +762,3 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
   f = forecast_results(demand,fcast,err,aerr,mse,mad,perr,mape,ts)
   return f
 
-if __name__ == "__main__":
-  src_path = os.path.abspath(__file__)
-  src_dir =  os.path.dirname(src_path)
-  root_dir = os.path.normpath(os.path.join(src_dir,os.pardir))
-  data_dir = os.path.join(root_dir,'data')
-  if not (os.path.exists(data_dir)):
-    print("Data directory %s does not exist!" % data_dir)
-    sys.exit(1)
-  
-  dirname= 'graphs+excel_directory'
-  dataset = os.path.join(data_dir , 'data.csv')
-  arglen = len(sys.argv)
-  if (arglen >= 2):
-    dataset = sys.argv[1]
-    if not (os.path.exists(dataset)):
-      print (" Dataset : %s does not exist!" % dataset)
-      sys.exit(1)
-    dataset = os.path.abspath(dataset)
-  if (arglen >= 3):
-    dirname = sys.argv[2]
-  # make directory for all files to be stored in(excel file, and graphs)
-  if (os.path.exists(dirname)):
-    while (1):
-      print ("The directory you are trying to save your files to :\n[ %s ]\nalready exists. delete it? y/n" % dirname)
-      try:
-        line = sys.stdin.readline()
-      except KeyboardInterrupt:
-         break
-      if not line:
-        break
-      if (line.rstrip() is 'y'):
-        print ("Deleting...")
-        try:
-          shutil.rmtree(dirname)
-          os.mkdir(dirname)
-        except (OSError,IOError) as e:
-          print ("Error in making directory!") 
-          sys.exit(1)
-        print ("Deletion sucess: folder %s overwritten!" % dirname)
-        break;
-      elif (line.rstrip() is 'n'):
-        print ("Exiting...")
-        sys.exit()
-  else:
-    try:
-      os.mkdir(dirname)
-    except OSError as e:
-      print ("Error in making directory!") 
-      sys.exit(1)
-
-  # read andcheck validity of dataset before doing anything
-  dataset   = os.path.abspath(dataset)
-  data = pd.read_csv(dataset)
-  if not ('period' in data):
-    print ("no period in csv")
-    sys.exit(1)
-  if not ('demand' in data):
-    print ("no demand data")
-    sys.exit(1)
-  if not ('periodicity' in data):
-    print ("no periodicity data")
-    sys.exit(1)
-  periodicity = data['periodicity'].values
-  if not (isinstance(periodicity[0],float)): 
-    print ("no periodicity data")
-    sys.exit(1)
-
-  # make graph directory to store all graph pictures in
-  graphpath = os.path.abspath(os.path.join(dirname,'graphs'))
-  os.mkdir(graphpath)
-  dirname   = os.path.abspath(dirname)
-  xlsx = xlsxwriter.Workbook(os.path.join(dirname,'generated_spreadsheet.xlsx'))
-  alpha = 0.06
-  beta = 0.06	
-  gamma = 0.06
- 
-  print ("alpha:")
-  print (alpha)
-  print ("beta:")
-  print (beta)
-  print ("gamma:")
-  print (gamma)
-
-  # make the forecasts
-  # return slope,intercept of regression and seasonal factors of deseasonalized demand for winter forecasting
-  static_fcast, slope, intercept, avg_sea = static_forecast(xlsx,data,graphpath)
-  moving_average = moving_average(xlsx,data,graphpath)
-  simple_exponential_smoothing = simple_exponential_smoothing(xlsx,data,graphpath,alpha)
-  holt = holt_trend_corrected_exponential_smoothing(xlsx,data,graphpath,alpha,beta)
-  winter = winter_trend_seasonality_forecast(xlsx,data,graphpath,alpha,beta,gamma,slope,intercept,avg_sea)
-  xlsx.close()
