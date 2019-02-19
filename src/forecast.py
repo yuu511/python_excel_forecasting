@@ -608,7 +608,6 @@ def holt_trend_corrected_exponential_smoothing(xlsx,data,dirpath,alpha,beta):
   col = 4
   for x in range (num_demand,num_demand+num_predicted):
     period = np.concatenate([period,[x+1]])
-    print (x-num_demand+1)
     predict = (lvl[len(lvl)-1] + ((x-num_demand+1) * tnd[len(tnd)-1]))
     fcast.append(predict)
     fcasted.append(predict)
