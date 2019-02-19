@@ -161,14 +161,20 @@ def static_forecast(xlsx,data,dirpath):
   mape = []
   ts = []
   
-  
+  # enumeration of columns
+  enum = None
+
   # column names
   c_names = ['Year','Period','Demand','De-Seasonalized Demand','Regressed,Deseasonalized Demand', 'Seasonal Factors', 'Average Seasonal Factors', 'Reintroduce Seasonality']
+  # fill up enumeration
+  enum = dict(zip(c_names,range(0,len(c_names)-1)))
+  print (enum)
   row = 0 
   col = 0
   for name in (c_names):
     static_forecast.write (row,col, name)
     col += 1
+  
   
   # fill out year and period columns
   row = 1 
@@ -201,7 +207,7 @@ def static_forecast(xlsx,data,dirpath):
       des=(demand[lower] + demand[upper]+(2 * np.sum(demand[lower+1:upper])))/(2*p)
       des_x.append(x)
       des_demand.append(des)
-      static_forecast.write_formula (excel_cell(row,col),"=(" + excel_cell(lower+1,2) + "+" + excel_cell(upper+1,2) + "+" + "2*SUM(" + excel_cell (lower+2,2) + ":" + excel_cell (upper,2) + "))" + "/8") 
+      static_forecast.write_formula (excel_cell(row,col),"=(" + excel_cell(lower+1,enum['Demand']) + "+" + excel_cell(upper+1,enum['Demand']) + "+" + "2*SUM(" + excel_cell (lower+2,enum['Demand']) + ":" + excel_cell (upper,enum['Demand']) + "))" + "/8") 
       # static_forecast.write (row,col,des) 
       row += 1
   else:
