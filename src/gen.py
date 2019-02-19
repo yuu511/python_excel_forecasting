@@ -9,7 +9,7 @@ import shutil
 import copy
 import math
 
-debug = False
+debug = True
 
 def graph_fcast_demand(fperiod,forecast,period,demand,name,path):
   plt.plot (fperiod,forecast,period,demand)
@@ -260,6 +260,11 @@ def static_forecast(xlsx,data,dirpath):
 
   # debug print statements
   if (debug):
+    print ( " LINEAR REGRESSION ")
+    print ("slope")
+    print ( slope )
+    print ("intercept")
+    print ( intercept )
     print ("period      %r " %  period     )
     print ("demand      %r " %  demand     )
     print ("seasonal_factors %r " %  sea_factors)
@@ -666,13 +671,13 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
   lvl.append(lzero)
   tnd.append(tzero)
   for x in range (num_demand):
-    level = ((gamma* (demand[x]/sea[x]))) + ((1 - gamma) * (lvl[x]+tnd[x])) 
+    level = ((alpha* (demand[x]/sea[x]))) + ((1 - alpha) * (lvl[x]+tnd[x])) 
     lvl.append (level)
     wt.write (row,col,level) 
-    trend = ((alpha * (lvl[x+1] - lvl [x])) + ((1- alpha)*tnd[x])) 
+    trend = ((beta * (lvl[x+1] - lvl [x])) + ((1- beta)*tnd[x])) 
     tnd.append (trend)
     wt.write (row,col+1,trend) 
-    seasonalf = ((alpha * (demand[x]/lvl[x+1])) + ((1 - alpha)*sea[x]))
+    seasonalf = ((gamma * (demand[x]/lvl[x+1])) + ((1 - gamma)*sea[x]))
     wt.write (row,col+2,seasonalf) 
     sea.append (seasonalf)
     row += 1
