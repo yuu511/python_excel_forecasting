@@ -41,6 +41,9 @@ class forecast_results:
    return self.mape
   def get_tracking_signal(self):
    return self.ts
+  def get_prediction(self):
+    return self.forecast[len(self.demand):len(self.forecast)]
+   
 
 # plot demand vs forecast
 def graph_fcast_demand(fperiod,forecast,period,demand,name,path):

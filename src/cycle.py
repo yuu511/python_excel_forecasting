@@ -26,4 +26,14 @@ def cycle_inventory(xlsx,demand,S,h,C):
   col = 1
   cycle_inventory.write(row,col,"Cycle Inventory")
   cycle_inventory.write(row+1,col,ret/2)
+  row = 4 
+  col = 0
+  cycle_inventory.write(row,col,"Number of Orders Per Year:")
+  cycle_inventory.write(row+1,col,D/ret)
+  cycle_inventory.write(row,col+1,"Replenishment time:")
+  cycle_inventory.write(row+1,col+1,365/(D/ret))
+  row = 6 
+  col = 0
+  cycle_inventory.write(row,col,"Average Flow time:")
+  cycle_inventory.write(row+1,col,(ret/(2*D))*365)
   return ret

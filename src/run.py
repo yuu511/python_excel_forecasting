@@ -102,6 +102,5 @@ if __name__ == "__main__":
   simple_exponential_smoothing = forecast.simple_exponential_smoothing(xlsx,data,graphpath,alpha)
   holt = forecast.holt_trend_corrected_exponential_smoothing(xlsx,data,graphpath,alpha,beta)
   winter = forecast.winter_trend_seasonality_forecast(xlsx,data,graphpath,alpha,beta,gamma,slope,intercept,avg_sea)
-  QL = cycle.cycle_inventory(xlsx,winter.get_forecast(),300,0.2,1000) 
-  print (QL)
+  QL = cycle.cycle_inventory(xlsx,winter.get_prediction(),7500,0.1,1000) 
   xlsx.close()
