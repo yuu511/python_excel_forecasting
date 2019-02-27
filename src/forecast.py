@@ -739,7 +739,7 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
   col = 4
   for x in range (num_demand,num_demand+num_predicted):
     period = np.concatenate([period,[x+1]])
-    predict = (lvl [num_demand-1] + ((x-num_demand) * tnd[num_demand-1]))* sea [x] 
+    predict = (lvl [num_demand] + ((x-num_demand+1) * tnd[num_demand])) * sea [x] 
     fcast.append(predict)
     fcasted.append(predict)
     # calculate new level, seasonality

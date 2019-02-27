@@ -84,8 +84,8 @@ if __name__ == "__main__":
   dirname   = os.path.abspath(dirname)
   xlsx = xlsxwriter.Workbook(os.path.join(dirname,'generated_spreadsheet.xlsx'))
 
-  alpha = 0.1
-  beta  = 0.2
+  alpha = 0.05
+  beta  = 0.1
   gamma = 0.1
  
   print ("alpha:")
