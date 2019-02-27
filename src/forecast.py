@@ -647,7 +647,7 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
   num_demand = len(demand)
   num_period = len(period)
   p = int(periodicity[0])
-  num_predicted = 4
+  num_predicted = 8
 
   # init lists
   lzero = None
@@ -699,7 +699,8 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
   for x in range (num_demand):
     wt.write (row,col,demand[x]) 
     row += 1
-
+ 
+  # init seasonal factors in static case
   for x in range (len(avg_sea)):
     sea.append(avg_sea[x])  
 
@@ -709,13 +710,13 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
   lvl.append(lzero)
   tnd.append(tzero)
   for x in range (num_demand):
-    level = ((gamma* (demand[x]/sea[x]))) + ((1 - gamma) * (lvl[x]+tnd[x])) 
+    level = ((alpha* (demand[x]/sea[x]))) + ((1 - alpha) * (lvl[x]+tnd[x])) 
     lvl.append (level)
     wt.write (row,col,level) 
-    trend = ((alpha * (lvl[x+1] - lvl [x])) + ((1- alpha)*tnd[x])) 
+    trend = ((beta * (lvl[x+1] - lvl [x])) + ((1- beta)*tnd[x])) 
     tnd.append (trend)
     wt.write (row,col+1,trend) 
-    seasonalf = ((alpha * (demand[x]/lvl[x+1])) + ((1 - alpha)*sea[x]))
+    seasonalf = ((gamma * (demand[x]/lvl[x+1])) + ((1 - gamma)*sea[x]))
     wt.write (row,col+2,seasonalf) 
     sea.append (seasonalf)
     row += 1
@@ -741,6 +742,14 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
     predict = (lvl [num_demand-1] + ((x-num_demand) * tnd[num_demand-1]))* sea [x] 
     fcast.append(predict)
     fcasted.append(predict)
+    # calculate new level, seasonality
+    level = ((alpha* (fcast[x-1]/sea[x-1]))) + ((1 - alpha) * (lvl[x-2]+tnd[x-3])) 
+    lvl.append (level)
+    trend = ((beta * (lvl[x-1] - lvl [x-2])) + ((1- beta)*tnd[x-2])) 
+    tnd.append (trend)
+    seasonalf = ((gamma * (fcast[x-1]/lvl[x-1])) + ((1 - gamma)*sea[x]))
+    sea.append (seasonalf)
+    # write
     wt.write (row,col,sea[x]) 
     wt.write (row,col+1,predict) 
     row +=1
