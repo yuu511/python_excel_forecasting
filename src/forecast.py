@@ -647,7 +647,7 @@ def winter_trend_seasonality_forecast(xlsx,data,dirpath,alpha,beta,gamma,slope,i
   num_demand = len(demand)
   num_period = len(period)
   p = int(periodicity[0])
-  num_predicted = p
+  num_predicted = 4
 
   # init lists
   lzero = None

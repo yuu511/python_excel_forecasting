@@ -9,7 +9,9 @@ OPTIONAL:
 -  tk (or jupyter notebook) : Displays matplotlib graphs 
 
 BUILD:
--  python -m pip install -r requirements.txt --user
+-  python -m pip install -r requirements.txt --user 
+OR:
+-  python3 -m pip install -r requirements.txt --user 
 
 RUN:
 - Run run.py in the src folder
